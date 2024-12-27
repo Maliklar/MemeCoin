@@ -8,6 +8,6 @@ export default class Ledger {
 
   constructor(ownerPK: string, ownerSignature: string) {
     this.ownerPK = ownerPK;
-    this.ownerSignature = ownerPK;
+    this.ownerSignature = ownerSignature;
   }
 }
