@@ -1,4 +1,4 @@
-export default class Ledger {
+export default class Block {
   owner: string;
   transactions: Transaction;
 }
