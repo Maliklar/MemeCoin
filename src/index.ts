@@ -1,25 +1,23 @@
-import { randomUUID } from "crypto";
-import { hash, hashCheck } from "./Manifest/manifest";
-import { v4 as uuid } from "uuid";
+import Block from "./dto/Block";
+import { dir } from "./ENV";
+import { hashCheck } from "./Manifest/manifest";
 
 async function main() {
   console.log("start");
+  console.log(dir);
 
   let i = 0;
-  let j = 100000000000000;
-  let k = -9156465465465;
-  for (;;) {
-    const v =
-      j * i * k * Math.random() + uuid() + i + Math.random() + "" + j + "" + k;
-    const value = hashCheck(v);
-    if (value) {
-      console.log("found", v, value);
-      return;
+  while (true) {
+    const check = hashCheck(i.toString());
+    if (check.isPrime) {
+      const block = new Block("malik", i.toString());
+      console.log(block);
+
+      break;
     }
     i++;
-    j++;
-    k--;
   }
+
   console.log("finished");
 }
 main();
