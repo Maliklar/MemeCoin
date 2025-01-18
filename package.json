@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
     "express": "^4.17.1",
-    "memecoin": "file:"
+    "memecoin": "file:",
+    "uuid": "^11.0.5"
   }
 }

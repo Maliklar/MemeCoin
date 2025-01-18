@@ -13,7 +13,8 @@ export function hash(input: BinaryLike) {
     .createHash(HASH_FUNCTION)
     .update(input)
     .digest("hex");
-  return BigInt(Number("0x" + hashValue));
+
+  return BigInt("0x" + hashValue);
 }
 
 export function hashCheck(input: BinaryLike) {
