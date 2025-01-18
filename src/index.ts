@@ -1,17 +1,19 @@
-import hash from "./hashing/hash";
+import { randomUUID } from "crypto";
+import { hash, hashCheck } from "./Manifest/manifest";
 
 async function main() {
   console.log("start");
 
-  // const buffers = [];
+  let i = 0;
+  for (;;) {
+    const value = hashCheck(i.toString());
 
-  // for (let i = 0; i < 100000; i++) {
-  //   buffers.push(Buffer.alloc(10000, 10000));
-  // }
-  const buffer = Buffer.allocUnsafe(12);
-
-  console.log(buffer);
-  const value = hash(buffer);
-  console.log(value);
+    if (value) {
+      console.log("found", i, value);
+      return;
+    }
+    i++;
+  }
+  console.log("finished");
 }
 main();
