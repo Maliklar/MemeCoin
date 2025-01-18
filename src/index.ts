@@ -8,7 +8,7 @@ async function main() {
   // for (let i = 0; i < 100000; i++) {
   //   buffers.push(Buffer.alloc(10000, 10000));
   // }
-  const buffer = Buffer.allocUnsafe(100000000);
+  const buffer = Buffer.allocUnsafe(12);
 
   console.log(buffer);
   const value = hash(buffer);
