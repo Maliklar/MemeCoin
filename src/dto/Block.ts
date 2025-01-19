@@ -1,15 +1,18 @@
-import jwt from "jsonwebtoken";
-import { hashCheck } from "../Manifest/manifest";
-import { Pointer } from "./types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { writeFileSync } from "fs";
 import fs from "fs/promises";
-import time from "../utils/time";
+import jwt from "jsonwebtoken";
 import { blocksPath } from "../ENV";
+import { hashCheck } from "../Manifest/manifest";
+import { signBlock } from "../utils/manager";
+import time from "../utils/time";
+import { Pointer } from "./types";
 
 export default class Block {
   public input: number; // The a number that the hash function digest should produce a prime
+  public hash: bigint;
   public owner: string;
   public timestamp: number;
-  public header: Pointer;
   public prev?: Pointer;
 
   constructor(ownerOrEncrypted: string, input?: number, prev?: Pointer) {
@@ -17,7 +20,7 @@ export default class Block {
       const data = jwt.decode(ownerOrEncrypted) as Block;
       this.owner = data.owner;
       this.input = data.input;
-      this.header = data.header;
+      this.hash = data.hash;
       this.prev = data.prev;
       this.timestamp = data.timestamp;
     } else {
@@ -27,12 +30,13 @@ export default class Block {
     }
 
     const { hash, isPrime } = hashCheck(this.input.toString());
+
     if (!isPrime) throw new Error("Hash value is not Prime");
-    this.header = { hash, input: this.input };
+    this.hash = hash;
     this.timestamp = time();
   }
 
-  public async validateBlock() {
+  public async validate() {
     const blocks = await fs.readFile(blocksPath, { encoding: "utf-8" });
     const list = blocks.split("\n");
     const last = list.at(-1);
@@ -44,7 +48,24 @@ export default class Block {
     if (block) return true;
   }
 
-  public serialize() {
-    return JSON.stringify(this);
+  async commit() {
+    return writeFileSync(`${blocksPath}`, "\n" + signBlock(this), {
+      flag: "a",
+    });
+  }
+
+  public serialize(object: Block | any = this) {
+    const clone = structuredClone(object) as any;
+    if (!clone) throw new Error();
+    const keyValue = Object.entries(clone);
+    for (const [key, value] of keyValue) {
+      if (typeof value === "bigint") {
+        clone[key] = value.toString();
+      }
+      if (typeof value === "object" && typeof value !== "bigint" && value) {
+        clone[key] = this.serialize(value);
+      }
+    }
+    return JSON.stringify(clone);
   }
 }

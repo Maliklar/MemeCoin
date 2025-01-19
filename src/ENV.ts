@@ -9,7 +9,7 @@ if (!secretKey)
   throw new Error("Error Initializing Constants: secretKey" + secretKey);
 
 export const dir = __dirname;
-export const blocksPath = `${__dirname}\\blocks`;
+export const blocksPath = `${__dirname}\\blocks\\blocks.blk`;
 
 const encOwnerId = signData(ownerId);
 
