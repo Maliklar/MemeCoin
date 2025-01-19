@@ -8,14 +8,15 @@ import isPrime from "./isPrime";
 
 export const HASH_FUNCTION = "MD5";
 
-export const HASH_SIZE = 64; // Bits
+const WORD = 4;
+export const HASH_SIZE = 64 / WORD; // Bits
 
 export function createHash(input: BinaryLike) {
   const hashValue = crypto
     .createHash(HASH_FUNCTION)
     .update(input)
     .digest("hex")
-    .substring(0, 8);
+    .substring(0, HASH_SIZE);
   return BigInt("0x" + hashValue);
 }
 

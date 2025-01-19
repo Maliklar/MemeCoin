@@ -1,6 +1,7 @@
 import Block from "./dto/Block";
-import { dir } from "./ENV";
+import { dir, encOwnerId } from "./ENV";
 import { hashCheck } from "./Manifest/manifest";
+import { writeBlock } from "./utils/manager";
 
 async function main() {
   console.log("start");
@@ -10,10 +11,9 @@ async function main() {
   while (true) {
     const check = hashCheck(i.toString());
     if (check.isPrime) {
-      const block = new Block("malik", i.toString());
-      console.log(block);
-
-      break;
+      const block = new Block(encOwnerId, i);
+      writeBlock(block);
+      console.log("found:", check, i);
     }
     i++;
   }

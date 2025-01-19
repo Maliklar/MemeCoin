@@ -1,56 +1,50 @@
-import { BinaryLike } from "crypto";
+import jwt from "jsonwebtoken";
 import { hashCheck } from "../Manifest/manifest";
-import { Pointer, RemoveFunctions, SerializedPointer } from "./types";
-
-type SerializedBlock = RemoveFunctions<Block> & {
-  input: string;
-  next: SerializedPointer;
-  prev?: SerializedPointer;
-  timestamp: number;
-};
+import { Pointer } from "./types";
+import fs from "fs/promises";
+import time from "../utils/time";
+import { blocksPath } from "../ENV";
 
 export default class Block {
-  public input: BinaryLike; // The a number that the hash function digest should produce a prime
+  public input: number; // The a number that the hash function digest should produce a prime
   public owner: string;
-  private timestamp: number;
-  private next: Pointer;
-  private prev?: Pointer;
+  public timestamp: number;
+  public header: Pointer;
+  public prev?: Pointer;
 
-  constructor(owner: string, input: BinaryLike, prev?: Pointer) {
-    this.owner = owner;
-    this.input = input;
-    const { hash, isPrime } = hashCheck(this.input);
+  constructor(ownerOrEncrypted: string, input?: number, prev?: Pointer) {
+    if (!input) {
+      const data = jwt.decode(ownerOrEncrypted) as Block;
+      this.owner = data.owner;
+      this.input = data.input;
+      this.header = data.header;
+      this.prev = data.prev;
+      this.timestamp = data.timestamp;
+    } else {
+      this.owner = ownerOrEncrypted;
+      this.input = input;
+      this.prev = prev;
+    }
+
+    const { hash, isPrime } = hashCheck(this.input.toString());
     if (!isPrime) throw new Error("Hash value is not Prime");
-    this.next = { hash, input: this.input };
-    this.timestamp = Date.now();
-    this.prev = prev;
+    this.header = { hash, input: this.input };
+    this.timestamp = time();
   }
 
-  getTimestamp() {
-    return this.timestamp;
-  }
-
-  getNext() {
-    return this.next;
-  }
-  getPrev() {
-    return this.prev;
+  public async validateBlock() {
+    const blocks = await fs.readFile(blocksPath, { encoding: "utf-8" });
+    const list = blocks.split("\n");
+    const last = list.at(-1);
+    if (!last)
+      throw new Error(
+        "Block list is invalid or you have created the first block"
+      );
+    const block = new Block(last);
+    if (block) return true;
   }
 
   public serialize() {
-    const json: SerializedBlock = {
-      input: this.input.toString(),
-      owner: this.owner,
-      timestamp: this.timestamp,
-      prev: this.prev && {
-        hash: this.prev.hash.toString(),
-        input: this.prev.input,
-      },
-      next: {
-        hash: this.next?.hash.toString(),
-        input: this.next?.input,
-      },
-    };
-    return JSON.stringify(json);
+    return JSON.stringify(this);
   }
 }

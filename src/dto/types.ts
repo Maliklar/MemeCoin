@@ -1,8 +1,6 @@
-import { BinaryLike } from "crypto";
-
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 export type Pointer = {
-  input: BinaryLike;
+  input: number;
   hash: bigint;
 };
 

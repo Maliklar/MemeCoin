@@ -11,6 +11,6 @@ if (!secretKey)
 export const dir = __dirname;
 export const blocksPath = `${__dirname}\\blocks`;
 
-const encOwnerId = signData(ownerId, secretKey);
+const encOwnerId = signData(ownerId);
 
 export { startTime, secretKey, encOwnerId };

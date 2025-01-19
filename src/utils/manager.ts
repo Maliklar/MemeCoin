@@ -1,19 +1,17 @@
-import { readFileSync, writeFileSync } from "fs";
-import { blocksPath } from "../ENV";
-import Block from "../dto/Block";
+import { writeFileSync } from "fs";
 import jwt from "jsonwebtoken";
+import { blocksPath, secretKey } from "../ENV";
+import Block from "../dto/Block";
 export async function writeBlock(block: Block) {
-  const blocks = readFileSync(`${blocksPath}/blocks.json`, {
-    encoding: "utf-8",
+  return writeFileSync(`${blocksPath}/blocks.blk`, "\n" + signBlock(block), {
+    flag: "a",
   });
-
-  return writeFileSync(`${blocksPath}/${block.input}.json`, block.serialize());
 }
 
-export function signBlock(data: Block, secret: string) {
-  return jwt.sign(data.serialize(), secret);
+export function signBlock(data: Block) {
+  return jwt.sign(data.serialize(), secretKey);
 }
 
-export function signData(data: string | Buffer | object, secret: string) {
-  return jwt.sign(data, secret);
+export function signData(data: string | Buffer | object) {
+  return jwt.sign(data, secretKey);
 }
