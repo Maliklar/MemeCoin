@@ -5,11 +5,17 @@ async function main() {
   console.log("start");
   console.log(dir);
 
-  const i = 100;
-  const block = new Block(encOwnerId, i);
-  await block.commit();
-  await block.commit();
-  console.log("found:", block, i);
+  let i = 117;
+  while (i <= 117) {
+    try {
+      const block = new Block(encOwnerId, 117);
+      await block.commit();
+    } catch {
+      console.log("hash value is not prime");
+    }
+    i++;
+  }
+  // console.log("found:", block, i);
 
   console.log("finished");
 }

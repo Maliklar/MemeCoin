@@ -2,6 +2,7 @@
 export type Pointer = {
   input: number;
   hash: bigint;
+  signature: string;
 };
 
 export type SerializedPointer = Omit<Pointer, "hash"> & {

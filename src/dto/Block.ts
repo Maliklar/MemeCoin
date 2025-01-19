@@ -1,32 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { writeFileSync } from "fs";
 import fs from "fs/promises";
 import jwt from "jsonwebtoken";
 import { blocksPath } from "../ENV";
+import { createNewBlock } from "../Manifest/blockManager";
 import { hashCheck } from "../Manifest/manifest";
-import { signBlock } from "../utils/manager";
 import time from "../utils/time";
-import { Pointer } from "./types";
 
 export default class Block {
   public input: number; // The a number that the hash function digest should produce a prime
   public hash: bigint;
   public owner: string;
   public timestamp: number;
-  public prev?: Pointer;
+  public prevHash?: bigint;
+  public prevInput?: number;
+  public prevSignature?: string;
 
-  constructor(ownerOrEncrypted: string, input?: number, prev?: Pointer) {
+  constructor(ownerOrEncrypted: string, input?: number) {
     if (!input) {
       const data = jwt.decode(ownerOrEncrypted) as Block;
       this.owner = data.owner;
       this.input = data.input;
       this.hash = data.hash;
-      this.prev = data.prev;
+      this.prevHash = data.prevHash;
+      this.prevInput = data.prevInput;
+      this.prevHash = data.prevHash;
       this.timestamp = data.timestamp;
+      this.prevHash = data.prevHash;
+      this.prevInput = data.prevInput;
+      this.prevHash = data.prevHash;
     } else {
       this.owner = ownerOrEncrypted;
       this.input = input;
-      this.prev = prev;
     }
 
     const { hash, isPrime } = hashCheck(this.input.toString());
@@ -49,9 +53,7 @@ export default class Block {
   }
 
   async commit() {
-    return writeFileSync(`${blocksPath}`, "\n" + signBlock(this), {
-      flag: "a",
-    });
+    await createNewBlock(this);
   }
 
   public serialize(object: Block | any = this) {
@@ -66,6 +68,7 @@ export default class Block {
         clone[key] = this.serialize(value);
       }
     }
+    console.log(clone);
     return JSON.stringify(clone);
   }
 }
