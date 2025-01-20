@@ -19,15 +19,12 @@ export default class Block {
     if (!input) {
       const data = jwt.decode(ownerOrEncrypted) as Block;
       this.owner = data.owner;
-      this.input = data.input;
-      this.hash = data.hash;
-      this.prevHash = data.prevHash;
-      this.prevInput = data.prevInput;
-      this.prevHash = data.prevHash;
+      this.input = Number(data.input);
+      this.hash = BigInt(data.hash);
+      this.prevHash = BigInt(data.prevHash?.toString() || "");
+      this.prevInput = Number(data.prevInput?.toString() || "");
       this.timestamp = data.timestamp;
-      this.prevHash = data.prevHash;
-      this.prevInput = data.prevInput;
-      this.prevHash = data.prevHash;
+      this.prevSignature = data.prevSignature;
     } else {
       this.owner = ownerOrEncrypted;
       this.input = input;

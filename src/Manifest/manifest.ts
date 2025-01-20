@@ -20,9 +20,13 @@ export function createHash(input: BinaryLike) {
   return BigInt("0x" + hashValue);
 }
 
+const firstBlocks = [
+  16939742312153078021n,
+  17913370561998816659n,
+  9415420481375052563n,
+];
 export function hashCheck(input: BinaryLike) {
   const hash = createHash(input);
-  if (hash === 17913370561998816659n || hash === 16939742312153078021n)
-    return { hash, isPrime: true };
+  if (firstBlocks.includes(hash)) return { hash, isPrime: true };
   return { hash, isPrime: isPrime(hash) };
 }
